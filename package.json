@@ -1,6 +1,6 @@
 {
   "name": "firebase-distribution-cleaner",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "CLI tool to clean old Firebase distribution artifacts",
   "main": "dist/index.js",
   "bin": {
@@ -43,7 +43,7 @@
     "firebase-admin": "^13.4.0"
   },
   "devDependencies": {
-    "@types/node": "22.15.29",
+    "@types/node": "22.15.30",
     "typescript": "^5.8.3",
     "@vercel/ncc": "^0.38.1"
   }
