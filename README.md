@@ -7,6 +7,8 @@
 - Delete releases for an app based on:
   - Minimum number of releases to keep.
   - Maximum age (in days) of releases to keep.
+  - Minimum build version threshold (semantic or numeric versioning).
+  - Keep latest release of each unique version combination.
 - Process a specific app or all apps in a project.
 - Authenticate using a Firebase service account key JSON file or Application Default Credentials.
 
@@ -31,10 +33,13 @@ firebase-distribution-cleaner [options]
 ### Options
 
 - `-p, --projectId <projectId>`: (Required) Firebase Project ID.
-- `-k, --serviceAccountKey <path>`: (Optional) Path to Firebase service account key JSON file. If not provided, Application Default Credentials will be used.
+- `-k, --serviceAccountKey <path>`: (Optional) Path to Firebase service account key JSON file. Used if --serviceAccountKeyJson is not provided.
+- `--serviceAccountKeyJson <jsonString>`: (Optional) Firebase service account key as a JSON string. Takes precedence over --serviceAccountKey.
 - `-a, --appId <appId>`: (Optional) Specific Firebase App ID to process. If not provided, all apps in the project will be processed.
-- `-c, --minCount <number>`: (Optional) Minimum number of artifacts to keep (default: 5).
-- `-d, --maxDays <number>`: (Optional) Maximum age in days for artifacts to keep (default: 30).
+- `-c, --minCount <number>`: (Optional) Minimum number of artifacts to keep.
+- `-d, --maxDays <number>`: (Optional) Maximum age in days for artifacts to keep.
+- `-b, --minBuildVersion <version>`: (Optional) Minimum build version threshold. Only delete releases with build version less than this value.
+- `-l, --keepLatestOfEachVersion`: (Optional) Keep the latest release for each unique display+build version combination, even if it would be deleted by other filters.
 - `-h, --help`: Display help for command.
 
 ### Examples
@@ -51,9 +56,17 @@ firebase-distribution-cleaner [options]
    firebase-distribution-cleaner -p YOUR_PROJECT_ID -a YOUR_APP_ID -c 3 -d 15
    ```
 
-3. **List all apps in a project (this will not delete anything if you only provide projectId and optionally serviceAccountKey):**
-   Actually, to only list apps without any cleaning action, the tool would need a specific command or option. Currently, it will attempt to delete based on default or specified retention criteria.
-   A dry-run feature could be a future enhancement.
+3. **Delete releases below build version 2.0.0, but keep the latest release of each version:**
+
+   ```bash
+   firebase-distribution-cleaner -p YOUR_PROJECT_ID -b "2.0.0" -l
+   ```
+
+4. **Complex filtering - keep minimum 5 releases, delete anything older than 30 days, but preserve latest of each version:**
+
+   ```bash
+   firebase-distribution-cleaner -p YOUR_PROJECT_ID -c 5 -d 30 -l
+   ```
 
 ## How it Works
 

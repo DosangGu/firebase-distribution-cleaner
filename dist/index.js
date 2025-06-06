@@ -13,6 +13,7 @@ async function main() {
         .option("-c, --minCount <number>", "Minimum number of artifacts to keep (optional)")
         .option("-d, --maxDays <number>", "Maximum age in days for artifacts to keep (optional)")
         .option("-b, --minBuildVersion <version>", "Minimum build version threshold. Only delete releases with build version less than this value (optional)")
+        .option("-l, --keepLatestOfEachVersion", "Keep the latest release for each unique display+build version combination, even if it would be deleted by other filters (optional)")
         .parse(process.argv);
     const options = program.opts();
     const cleanerOptions = {
@@ -23,6 +24,7 @@ async function main() {
         minCount: options.minCount ? parseInt(options.minCount, 10) : undefined,
         maxDays: options.maxDays ? parseInt(options.maxDays, 10) : undefined,
         minBuildVersion: options.minBuildVersion,
+        keepLatestOfEachVersion: options.keepLatestOfEachVersion || false,
     };
     try {
         await (0, cleaner_1.runCleaner)(cleanerOptions);

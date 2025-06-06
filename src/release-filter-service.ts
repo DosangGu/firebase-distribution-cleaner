@@ -6,7 +6,8 @@ export class ReleaseFilterService {
     releases: Release[],
     minCount?: number,
     maxDays?: number,
-    minBuildVersion?: string
+    minBuildVersion?: string,
+    keepLatestOfEachVersion?: boolean
   ): Release[] {
     if (!releases || releases.length === 0) {
       return [];
@@ -17,6 +18,19 @@ export class ReleaseFilterService {
       (a, b) =>
         new Date(b.createTime).getTime() - new Date(a.createTime).getTime()
     );
+
+    // If keepLatestOfEachVersion is enabled, identify the latest release for each version combination
+    const latestOfEachVersion = new Set<string>();
+    if (keepLatestOfEachVersion) {
+      const versionMap = new Map<string, Release>();
+      for (const release of sortedReleases) {
+        const versionKey = `${release.displayVersion}+${release.buildVersion}`;
+        if (!versionMap.has(versionKey)) {
+          versionMap.set(versionKey, release);
+          latestOfEachVersion.add(release.name);
+        }
+      }
+    }
 
     const releasesToDelete: Release[] = [];
     const cutoffDate = maxDays ? new Date() : null;
@@ -46,6 +60,11 @@ export class ReleaseFilterService {
         if (!VersionUtils.isVersionLessThan(release.buildVersion, minBuildVersion)) {
           shouldDelete = false;
         }
+      }
+
+      // Check if this release should be kept as the latest of its version
+      if (keepLatestOfEachVersion && latestOfEachVersion.has(release.name)) {
+        shouldDelete = false;
       }
 
       // If no thresholds are provided, don't delete anything

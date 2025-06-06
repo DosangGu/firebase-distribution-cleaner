@@ -24,6 +24,9 @@ inputs:
   min-build-version:
     description: "Minimum build version threshold. Only delete releases with build version less than this value. If not provided, this threshold will not be applied."
     required: false
+  keep-latest-of-each-version:
+    description: "Keep the latest release for each unique display+build version combination, even if it would be deleted by other filters. Default is false."
+    required: false
 
 runs:
   using: "node20"

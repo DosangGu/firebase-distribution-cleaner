@@ -3,12 +3,24 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ReleaseFilterService = void 0;
 const version_utils_1 = require("./version-utils");
 class ReleaseFilterService {
-    static filterReleasesToDelete(releases, minCount, maxDays, minBuildVersion) {
+    static filterReleasesToDelete(releases, minCount, maxDays, minBuildVersion, keepLatestOfEachVersion) {
         if (!releases || releases.length === 0) {
             return [];
         }
         // Sort releases by creation time (newest first)
         const sortedReleases = [...releases].sort((a, b) => new Date(b.createTime).getTime() - new Date(a.createTime).getTime());
+        // If keepLatestOfEachVersion is enabled, identify the latest release for each version combination
+        const latestOfEachVersion = new Set();
+        if (keepLatestOfEachVersion) {
+            const versionMap = new Map();
+            for (const release of sortedReleases) {
+                const versionKey = `${release.displayVersion}+${release.buildVersion}`;
+                if (!versionMap.has(versionKey)) {
+                    versionMap.set(versionKey, release);
+                    latestOfEachVersion.add(release.name);
+                }
+            }
+        }
         const releasesToDelete = [];
         const cutoffDate = maxDays ? new Date() : null;
         if (cutoffDate && maxDays) {
@@ -32,6 +44,10 @@ class ReleaseFilterService {
                 if (!version_utils_1.VersionUtils.isVersionLessThan(release.buildVersion, minBuildVersion)) {
                     shouldDelete = false;
                 }
+            }
+            // Check if this release should be kept as the latest of its version
+            if (keepLatestOfEachVersion && latestOfEachVersion.has(release.name)) {
+                shouldDelete = false;
             }
             // If no thresholds are provided, don't delete anything
             if (minCount === undefined && maxDays === undefined && minBuildVersion === undefined) {

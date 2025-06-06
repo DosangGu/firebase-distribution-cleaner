@@ -22,4 +22,5 @@ export interface CleanerOptions {
   minCount?: number;
   maxDays?: number;
   minBuildVersion?: string;
+  keepLatestOfEachVersion?: boolean;
 }
