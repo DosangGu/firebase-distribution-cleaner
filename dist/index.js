@@ -10,8 +10,8 @@ async function main() {
         .option("-k, --serviceAccountKey <path>", "Path to Firebase service account key JSON file. Used if --serviceAccountKeyJson is not provided.")
         .option("--serviceAccountKeyJson <jsonString>", "Firebase service account key as a JSON string. Takes precedence over --serviceAccountKey.")
         .option("-a, --appId <appId>", "Specific Firebase App ID to process")
-        .option("-c, --minCount <number>", "Minimum number of artifacts to keep", "5")
-        .option("-d, --maxDays <number>", "Maximum age in days for artifacts to keep", "30")
+        .option("-c, --minCount <number>", "Minimum number of artifacts to keep (optional)")
+        .option("-d, --maxDays <number>", "Maximum age in days for artifacts to keep (optional)")
         .parse(process.argv);
     const options = program.opts();
     const cleanerOptions = {
@@ -19,8 +19,8 @@ async function main() {
         serviceAccountKeyPath: options.serviceAccountKey,
         serviceAccountKeyJson: options.serviceAccountKeyJson,
         appId: options.appId,
-        minCount: parseInt(options.minCount, 10),
-        maxDays: parseInt(options.maxDays, 10),
+        minCount: options.minCount ? parseInt(options.minCount, 10) : undefined,
+        maxDays: options.maxDays ? parseInt(options.maxDays, 10) : undefined,
     };
     try {
         await (0, cleaner_1.runCleaner)(cleanerOptions);

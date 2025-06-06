@@ -19,6 +19,6 @@ export interface CleanerOptions {
   serviceAccountKeyPath?: string;
   serviceAccountKeyJson?: string;
   appId?: string;
-  minCount: number;
-  maxDays: number;
+  minCount?: number;
+  maxDays?: number;
 }

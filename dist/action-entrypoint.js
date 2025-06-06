@@ -41,8 +41,8 @@ async function run() {
         const serviceAccountKeyJson = core.getInput("service-account-key-json");
         const serviceAccountKeyPath = core.getInput("service-account-key-path");
         const appId = core.getInput("app-id");
-        const minCount = parseInt(core.getInput("min-count") || "5", 10);
-        const maxDays = parseInt(core.getInput("max-days") || "30", 10);
+        const minCount = core.getInput("min-count") ? parseInt(core.getInput("min-count"), 10) : undefined;
+        const maxDays = core.getInput("max-days") ? parseInt(core.getInput("max-days"), 10) : undefined;
         if (!serviceAccountKeyJson &&
             !serviceAccountKeyPath &&
             !process.env.GOOGLE_APPLICATION_CREDENTIALS) {

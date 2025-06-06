@@ -3,8 +3,8 @@ import { Release } from "./types";
 export class ReleaseFilterService {
   static filterReleasesToDelete(
     releases: Release[],
-    minCount: number,
-    maxDays: number
+    minCount?: number,
+    maxDays?: number
   ): Release[] {
     if (!releases || releases.length === 0) {
       return [];
@@ -17,17 +17,34 @@ export class ReleaseFilterService {
     );
 
     const releasesToDelete: Release[] = [];
-    const cutoffDate = new Date();
-    cutoffDate.setDate(cutoffDate.getDate() - maxDays);
+    const cutoffDate = maxDays ? new Date() : null;
+    if (cutoffDate && maxDays) {
+      cutoffDate.setDate(cutoffDate.getDate() - maxDays);
+    }
 
     for (let i = 0; i < sortedReleases.length; i++) {
       const release = sortedReleases[i];
       const releaseDate = new Date(release.createTime);
 
-      // Only delete if:
-      // 1. We have more than minCount releases (keep the newest minCount releases)
-      // 2. The release is older than maxDays
-      if (i >= minCount && releaseDate < cutoffDate) {
+      // Apply filters only if they are provided
+      let shouldDelete = true;
+
+      // Check minCount threshold (keep the newest minCount releases)
+      if (minCount !== undefined && i < minCount) {
+        shouldDelete = false;
+      }
+
+      // Check maxDays threshold (only delete if older than maxDays)
+      if (maxDays !== undefined && cutoffDate && releaseDate >= cutoffDate) {
+        shouldDelete = false;
+      }
+
+      // If no thresholds are provided, don't delete anything
+      if (minCount === undefined && maxDays === undefined) {
+        shouldDelete = false;
+      }
+
+      if (shouldDelete) {
         releasesToDelete.push(release);
       }
     }

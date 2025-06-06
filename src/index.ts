@@ -19,13 +19,11 @@ async function main() {
     .option("-a, --appId <appId>", "Specific Firebase App ID to process")
     .option(
       "-c, --minCount <number>",
-      "Minimum number of artifacts to keep",
-      "5"
+      "Minimum number of artifacts to keep (optional)"
     )
     .option(
       "-d, --maxDays <number>",
-      "Maximum age in days for artifacts to keep",
-      "30"
+      "Maximum age in days for artifacts to keep (optional)"
     )
     .parse(process.argv);
 
@@ -35,8 +33,8 @@ async function main() {
     serviceAccountKeyPath: options.serviceAccountKey,
     serviceAccountKeyJson: options.serviceAccountKeyJson,
     appId: options.appId,
-    minCount: parseInt(options.minCount, 10),
-    maxDays: parseInt(options.maxDays, 10),
+    minCount: options.minCount ? parseInt(options.minCount, 10) : undefined,
+    maxDays: options.maxDays ? parseInt(options.maxDays, 10) : undefined,
   };
 
   try {

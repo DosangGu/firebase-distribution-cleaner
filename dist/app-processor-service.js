@@ -15,6 +15,19 @@ class AppProcessorService {
             return;
         }
         console.log(`Found ${releases.length} release(s).`);
+        // Check if any filters are applied
+        if (minCount === undefined && maxDays === undefined) {
+            console.log("No filtering criteria provided (minCount or maxDays). No releases will be deleted.");
+            return;
+        }
+        const filtersApplied = [];
+        if (minCount !== undefined) {
+            filtersApplied.push(`keeping newest ${minCount} releases`);
+        }
+        if (maxDays !== undefined) {
+            filtersApplied.push(`deleting releases older than ${maxDays} days`);
+        }
+        console.log(`Applying filters: ${filtersApplied.join(", ")}`);
         const releasesToDelete = release_filter_service_1.ReleaseFilterService.filterReleasesToDelete(releases, minCount, maxDays);
         release_filter_service_1.ReleaseFilterService.logReleasesToDelete(releasesToDelete);
         if (releasesToDelete.length > 0) {

@@ -18,11 +18,9 @@ inputs:
   min-count:
     description: "Minimum number of artifacts to keep."
     required: false
-    default: "5"
   max-days:
     description: "Maximum age in days for artifacts to keep."
     required: false
-    default: "30"
 
 runs:
   using: "node20"
