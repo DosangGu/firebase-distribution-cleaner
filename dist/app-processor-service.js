@@ -6,7 +6,7 @@ class AppProcessorService {
     constructor(firebaseApiService) {
         this.firebaseApiService = firebaseApiService;
     }
-    async processApp(projectId, appId, minCount, maxDays, appName) {
+    async processApp(projectId, appId, minCount, maxDays, minBuildVersion, appName) {
         const displayName = appName ? `${appName} (${appId})` : appId;
         console.log(`Processing app: ${displayName}`);
         const releases = await this.firebaseApiService.listReleases(projectId, appId);
@@ -16,8 +16,8 @@ class AppProcessorService {
         }
         console.log(`Found ${releases.length} release(s).`);
         // Check if any filters are applied
-        if (minCount === undefined && maxDays === undefined) {
-            console.log("No filtering criteria provided (minCount or maxDays). No releases will be deleted.");
+        if (minCount === undefined && maxDays === undefined && minBuildVersion === undefined) {
+            console.log("No filtering criteria provided (minCount, maxDays, or minBuildVersion). No releases will be deleted.");
             return;
         }
         const filtersApplied = [];
@@ -27,8 +27,11 @@ class AppProcessorService {
         if (maxDays !== undefined) {
             filtersApplied.push(`deleting releases older than ${maxDays} days`);
         }
+        if (minBuildVersion !== undefined) {
+            filtersApplied.push(`deleting releases with build version < ${minBuildVersion}`);
+        }
         console.log(`Applying filters: ${filtersApplied.join(", ")}`);
-        const releasesToDelete = release_filter_service_1.ReleaseFilterService.filterReleasesToDelete(releases, minCount, maxDays);
+        const releasesToDelete = release_filter_service_1.ReleaseFilterService.filterReleasesToDelete(releases, minCount, maxDays, minBuildVersion);
         release_filter_service_1.ReleaseFilterService.logReleasesToDelete(releasesToDelete);
         if (releasesToDelete.length > 0) {
             const releaseNamesToDelete = releasesToDelete.map((release) => release.name);
@@ -40,7 +43,7 @@ class AppProcessorService {
             }
         }
     }
-    async processAllApps(projectId, minCount, maxDays) {
+    async processAllApps(projectId, minCount, maxDays, minBuildVersion) {
         console.log(`Fetching apps for project: ${projectId}`);
         const apps = await this.firebaseApiService.listApps(projectId);
         if (!apps || apps.length === 0) {
@@ -50,7 +53,7 @@ class AppProcessorService {
         console.log(`Found ${apps.length} app(s):`);
         apps.forEach((app) => console.log(`- ${app.name} (ID: ${app.appId}, Platform: ${app.platform})`));
         for (const app of apps) {
-            await this.processApp(projectId, app.appId, minCount, maxDays, app.name);
+            await this.processApp(projectId, app.appId, minCount, maxDays, minBuildVersion, app.name);
         }
     }
 }

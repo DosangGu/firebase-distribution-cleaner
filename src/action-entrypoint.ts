@@ -10,6 +10,7 @@ async function run(): Promise<void> {
     const appId = core.getInput("app-id");
     const minCount = core.getInput("min-count") ? parseInt(core.getInput("min-count"), 10) : undefined;
     const maxDays = core.getInput("max-days") ? parseInt(core.getInput("max-days"), 10) : undefined;
+    const minBuildVersion = core.getInput("min-build-version") || undefined;
 
     if (
       !serviceAccountKeyJson &&
@@ -29,6 +30,7 @@ async function run(): Promise<void> {
       appId: appId || undefined,
       minCount,
       maxDays,
+      minBuildVersion,
     };
 
     await runCleaner(cleanerOptions);

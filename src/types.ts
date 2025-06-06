@@ -21,4 +21,5 @@ export interface CleanerOptions {
   appId?: string;
   minCount?: number;
   maxDays?: number;
+  minBuildVersion?: string;
 }

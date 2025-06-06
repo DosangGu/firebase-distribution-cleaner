@@ -14,6 +14,7 @@ export async function runCleaner(options: CleanerOptions): Promise<void> {
     appId: appIdOption,
     minCount,
     maxDays,
+    minBuildVersion,
   } = options;
 
   try {
@@ -42,10 +43,11 @@ export async function runCleaner(options: CleanerOptions): Promise<void> {
         projectId,
         appIdOption,
         minCount,
-        maxDays
+        maxDays,
+        minBuildVersion
       );
     } else {
-      await appProcessorService.processAllApps(projectId, minCount, maxDays);
+      await appProcessorService.processAllApps(projectId, minCount, maxDays, minBuildVersion);
     }
 
     console.log("Cleaning complete.");

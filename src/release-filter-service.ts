@@ -1,10 +1,12 @@
 import { Release } from "./types";
+import { VersionUtils } from "./version-utils";
 
 export class ReleaseFilterService {
   static filterReleasesToDelete(
     releases: Release[],
     minCount?: number,
-    maxDays?: number
+    maxDays?: number,
+    minBuildVersion?: string
   ): Release[] {
     if (!releases || releases.length === 0) {
       return [];
@@ -39,8 +41,15 @@ export class ReleaseFilterService {
         shouldDelete = false;
       }
 
+      // Check minBuildVersion threshold (only delete if build version is less than threshold)
+      if (minBuildVersion !== undefined) {
+        if (!VersionUtils.isVersionLessThan(release.buildVersion, minBuildVersion)) {
+          shouldDelete = false;
+        }
+      }
+
       // If no thresholds are provided, don't delete anything
-      if (minCount === undefined && maxDays === undefined) {
+      if (minCount === undefined && maxDays === undefined && minBuildVersion === undefined) {
         shouldDelete = false;
       }
 

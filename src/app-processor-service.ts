@@ -10,6 +10,7 @@ export class AppProcessorService {
     appId: string,
     minCount?: number,
     maxDays?: number,
+    minBuildVersion?: string,
     appName?: string
   ): Promise<void> {
     const displayName = appName ? `${appName} (${appId})` : appId;
@@ -25,8 +26,8 @@ export class AppProcessorService {
     console.log(`Found ${releases.length} release(s).`);
 
     // Check if any filters are applied
-    if (minCount === undefined && maxDays === undefined) {
-      console.log("No filtering criteria provided (minCount or maxDays). No releases will be deleted.");
+    if (minCount === undefined && maxDays === undefined && minBuildVersion === undefined) {
+      console.log("No filtering criteria provided (minCount, maxDays, or minBuildVersion). No releases will be deleted.");
       return;
     }
 
@@ -37,12 +38,16 @@ export class AppProcessorService {
     if (maxDays !== undefined) {
       filtersApplied.push(`deleting releases older than ${maxDays} days`);
     }
+    if (minBuildVersion !== undefined) {
+      filtersApplied.push(`deleting releases with build version < ${minBuildVersion}`);
+    }
     console.log(`Applying filters: ${filtersApplied.join(", ")}`);
 
     const releasesToDelete = ReleaseFilterService.filterReleasesToDelete(
       releases,
       minCount,
-      maxDays
+      maxDays,
+      minBuildVersion
     );
 
     ReleaseFilterService.logReleasesToDelete(releasesToDelete);
@@ -70,7 +75,8 @@ export class AppProcessorService {
   async processAllApps(
     projectId: string,
     minCount?: number,
-    maxDays?: number
+    maxDays?: number,
+    minBuildVersion?: string
   ): Promise<void> {
     console.log(`Fetching apps for project: ${projectId}`);
     const apps = await this.firebaseApiService.listApps(projectId);
@@ -93,6 +99,7 @@ export class AppProcessorService {
         app.appId,
         minCount,
         maxDays,
+        minBuildVersion,
         app.name
       );
     }

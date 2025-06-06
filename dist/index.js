@@ -12,6 +12,7 @@ async function main() {
         .option("-a, --appId <appId>", "Specific Firebase App ID to process")
         .option("-c, --minCount <number>", "Minimum number of artifacts to keep (optional)")
         .option("-d, --maxDays <number>", "Maximum age in days for artifacts to keep (optional)")
+        .option("-b, --minBuildVersion <version>", "Minimum build version threshold. Only delete releases with build version less than this value (optional)")
         .parse(process.argv);
     const options = program.opts();
     const cleanerOptions = {
@@ -21,6 +22,7 @@ async function main() {
         appId: options.appId,
         minCount: options.minCount ? parseInt(options.minCount, 10) : undefined,
         maxDays: options.maxDays ? parseInt(options.maxDays, 10) : undefined,
+        minBuildVersion: options.minBuildVersion,
     };
     try {
         await (0, cleaner_1.runCleaner)(cleanerOptions);

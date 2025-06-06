@@ -1,8 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ReleaseFilterService = void 0;
+const version_utils_1 = require("./version-utils");
 class ReleaseFilterService {
-    static filterReleasesToDelete(releases, minCount, maxDays) {
+    static filterReleasesToDelete(releases, minCount, maxDays, minBuildVersion) {
         if (!releases || releases.length === 0) {
             return [];
         }
@@ -26,8 +27,14 @@ class ReleaseFilterService {
             if (maxDays !== undefined && cutoffDate && releaseDate >= cutoffDate) {
                 shouldDelete = false;
             }
+            // Check minBuildVersion threshold (only delete if build version is less than threshold)
+            if (minBuildVersion !== undefined) {
+                if (!version_utils_1.VersionUtils.isVersionLessThan(release.buildVersion, minBuildVersion)) {
+                    shouldDelete = false;
+                }
+            }
             // If no thresholds are provided, don't delete anything
-            if (minCount === undefined && maxDays === undefined) {
+            if (minCount === undefined && maxDays === undefined && minBuildVersion === undefined) {
                 shouldDelete = false;
             }
             if (shouldDelete) {

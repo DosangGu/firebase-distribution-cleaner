@@ -5,7 +5,7 @@ const auth_service_1 = require("./auth-service");
 const firebase_api_service_1 = require("./firebase-api-service");
 const app_processor_service_1 = require("./app-processor-service");
 async function runCleaner(options) {
-    const { projectId, serviceAccountKeyPath, serviceAccountKeyJson, appId: appIdOption, minCount, maxDays, } = options;
+    const { projectId, serviceAccountKeyPath, serviceAccountKeyJson, appId: appIdOption, minCount, maxDays, minBuildVersion, } = options;
     try {
         // Initialize Firebase Admin SDK
         auth_service_1.AuthService.initializeFirebaseAdmin(serviceAccountKeyPath, serviceAccountKeyJson);
@@ -17,10 +17,10 @@ async function runCleaner(options) {
         // Process specific app or all apps
         if (appIdOption) {
             console.log(`Processing specified app: ${appIdOption} for project: ${projectId}`);
-            await appProcessorService.processApp(projectId, appIdOption, minCount, maxDays);
+            await appProcessorService.processApp(projectId, appIdOption, minCount, maxDays, minBuildVersion);
         }
         else {
-            await appProcessorService.processAllApps(projectId, minCount, maxDays);
+            await appProcessorService.processAllApps(projectId, minCount, maxDays, minBuildVersion);
         }
         console.log("Cleaning complete.");
     }

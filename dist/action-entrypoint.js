@@ -43,6 +43,7 @@ async function run() {
         const appId = core.getInput("app-id");
         const minCount = core.getInput("min-count") ? parseInt(core.getInput("min-count"), 10) : undefined;
         const maxDays = core.getInput("max-days") ? parseInt(core.getInput("max-days"), 10) : undefined;
+        const minBuildVersion = core.getInput("min-build-version") || undefined;
         if (!serviceAccountKeyJson &&
             !serviceAccountKeyPath &&
             !process.env.GOOGLE_APPLICATION_CREDENTIALS) {
@@ -56,6 +57,7 @@ async function run() {
             appId: appId || undefined,
             minCount,
             maxDays,
+            minBuildVersion,
         };
         await (0, cleaner_1.runCleaner)(cleanerOptions);
         core.info("Firebase Distribution Cleaner action completed successfully.");

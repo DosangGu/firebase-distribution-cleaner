@@ -21,6 +21,9 @@ inputs:
   max-days:
     description: "Maximum age in days for artifacts to keep."
     required: false
+  min-build-version:
+    description: "Minimum build version threshold. Only delete releases with build version less than this value. If not provided, this threshold will not be applied."
+    required: false
 
 runs:
   using: "node20"

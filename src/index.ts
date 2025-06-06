@@ -25,6 +25,10 @@ async function main() {
       "-d, --maxDays <number>",
       "Maximum age in days for artifacts to keep (optional)"
     )
+    .option(
+      "-b, --minBuildVersion <version>",
+      "Minimum build version threshold. Only delete releases with build version less than this value (optional)"
+    )
     .parse(process.argv);
 
   const options = program.opts();
@@ -35,6 +39,7 @@ async function main() {
     appId: options.appId,
     minCount: options.minCount ? parseInt(options.minCount, 10) : undefined,
     maxDays: options.maxDays ? parseInt(options.maxDays, 10) : undefined,
+    minBuildVersion: options.minBuildVersion,
   };
 
   try {
