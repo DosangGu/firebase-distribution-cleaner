@@ -1,5 +1,6 @@
 import * as core from "@actions/core";
-import { runCleaner, CleanerOptions } from "./cleaner";
+import { runCleaner } from "./cleaner";
+import { CleanerOptions } from "./types";
 
 async function run(): Promise<void> {
   try {

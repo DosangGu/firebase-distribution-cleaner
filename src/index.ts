@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
 import { Command } from "commander";
-import { runCleaner, CleanerOptions } from "./cleaner";
+import { runCleaner } from "./cleaner";
+import { CleanerOptions } from "./types";
 
 async function main() {
   const program = new Command();
