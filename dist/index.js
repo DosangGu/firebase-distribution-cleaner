@@ -6,7 +6,8 @@ const cleaner_1 = require("./cleaner");
 async function main() {
     const program = new commander_1.Command();
     program
-        .requiredOption("-p, --projectId <projectId>", "Firebase Project ID")
+        .option("-p, --projectNumber <projectNumber>", "Firebase Project Number")
+        .option("--projectId <projectId>", "Firebase Project ID (deprecated, use --projectNumber)")
         .option("-k, --serviceAccountKey <path>", "Path to Firebase service account key JSON file. Used if --serviceAccountKeyJson is not provided.")
         .option("--serviceAccountKeyJson <jsonString>", "Firebase service account key as a JSON string. Takes precedence over --serviceAccountKey.")
         .option("-a, --appId <appId>", "Specific Firebase App ID to process")
@@ -16,8 +17,18 @@ async function main() {
         .option("-l, --keepLatestOfEachVersion", "Keep the latest release for each unique display+build version combination, even if it would be deleted by other filters (optional)")
         .parse(process.argv);
     const options = program.opts();
+    // Backward compatibility: use projectId if projectNumber is not provided
+    let projectNumber = options.projectNumber;
+    if (!projectNumber && options.projectId) {
+        projectNumber = options.projectId;
+        console.warn("Warning: --projectId is deprecated. Please use --projectNumber instead.");
+    }
+    if (!projectNumber) {
+        console.error("Error: --projectNumber is required");
+        process.exit(1);
+    }
     const cleanerOptions = {
-        projectId: options.projectId,
+        projectNumber: projectNumber,
         serviceAccountKeyPath: options.serviceAccountKey,
         serviceAccountKeyJson: options.serviceAccountKeyJson,
         appId: options.appId,

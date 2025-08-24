@@ -4,8 +4,11 @@ author: "Dosang Gu"
 
 inputs:
   project-id:
-    description: "Firebase Project ID."
-    required: true
+    description: "Firebase Project ID (deprecated, use project-number)."
+    required: false
+  project-number:
+    description: "Firebase Project Number."
+    required: false
   service-account-key-json:
     description: "Firebase service account key as a JSON string. Recommended for use with secrets."
     required: false

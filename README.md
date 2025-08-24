@@ -21,7 +21,7 @@ npm install -g firebase-distribution-cleaner
 Or use it with `npx`:
 
 ```bash
-npx firebase-distribution-cleaner --projectId <your-project-id> [options]
+npx firebase-distribution-cleaner --projectNumber <your-project-number> [options]
 ```
 
 ## Usage
@@ -32,7 +32,7 @@ firebase-distribution-cleaner [options]
 
 ### Options
 
-- `-p, --projectId <projectId>`: (Required) Firebase Project ID.
+- `-p, --projectNumber <projectNumber>`: (Required) Firebase Project Number.
 - `-k, --serviceAccountKey <path>`: (Optional) Path to Firebase service account key JSON file. Used if --serviceAccountKeyJson is not provided.
 - `--serviceAccountKeyJson <jsonString>`: (Optional) Firebase service account key as a JSON string. Takes precedence over --serviceAccountKey.
 - `-a, --appId <appId>`: (Optional) Specific Firebase App ID to process. If not provided, all apps in the project will be processed.
@@ -47,25 +47,25 @@ firebase-distribution-cleaner [options]
 1. **Delete artifacts for all apps in a project, keeping the latest 10 releases and releases newer than 60 days (using service account key):**
 
    ```bash
-   firebase-distribution-cleaner -p YOUR_PROJECT_ID -k /path/to/your/serviceAccountKey.json -c 10 -d 60
+   firebase-distribution-cleaner -p YOUR_PROJECT_NUMBER -k /path/to/your/serviceAccountKey.json -c 10 -d 60
    ```
 
 2. **Delete artifacts for a specific app, keeping the latest 3 releases and releases newer than 15 days (using Application Default Credentials):**
 
    ```bash
-   firebase-distribution-cleaner -p YOUR_PROJECT_ID -a YOUR_APP_ID -c 3 -d 15
+   firebase-distribution-cleaner -p YOUR_PROJECT_NUMBER -a YOUR_APP_ID -c 3 -d 15
    ```
 
 3. **Delete releases below build version 2.0.0, but keep the latest release of each version:**
 
    ```bash
-   firebase-distribution-cleaner -p YOUR_PROJECT_ID -b "2.0.0" -l
+   firebase-distribution-cleaner -p YOUR_PROJECT_NUMBER -b "2.0.0" -l
    ```
 
 4. **Complex filtering - keep minimum 5 releases, delete anything older than 30 days, but preserve latest of each version:**
 
    ```bash
-   firebase-distribution-cleaner -p YOUR_PROJECT_ID -c 5 -d 30 -l
+   firebase-distribution-cleaner -p YOUR_PROJECT_NUMBER -c 5 -d 30 -l
    ```
 
 ## GitHub Action Usage
@@ -87,7 +87,7 @@ jobs:
     steps:
       - uses: DosangGu/firebase-distribution-cleaner@v1
         with:
-          project-id: ${{ secrets.FIREBASE_PROJECT_ID }}
+          project-number: ${{ secrets.FIREBASE_PROJECT_NUMBER }}
           service-account-key-json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
           min-count: "5"
           max-days: "30"
@@ -97,7 +97,7 @@ jobs:
 
 | Input                         | Description                                               | Required | Default  |
 | ----------------------------- | --------------------------------------------------------- | -------- | -------- |
-| `project-id`                  | Firebase Project ID                                       | ✅       | -        |
+| `project-number`              | Firebase Project Number                                   | ✅       | -        |
 | `service-account-key-json`    | Firebase service account key as JSON string (recommended) | ❌       | -        |
 | `service-account-key-path`    | Path to service account key file                          | ❌       | -        |
 | `app-id`                      | Specific Firebase App ID to process                       | ❌       | All apps |
@@ -113,7 +113,7 @@ jobs:
 ```yaml
 - uses: DosangGu/firebase-distribution-cleaner@v1
   with:
-    project-id: ${{ secrets.FIREBASE_PROJECT_ID }}
+    project-number: ${{ secrets.FIREBASE_PROJECT_NUMBER }}
     service-account-key-json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
     min-count: "20" # Keep at least 20 releases
     max-days: "90" # Keep releases from last 3 months
@@ -125,7 +125,7 @@ jobs:
 ```yaml
 - uses: DosangGu/firebase-distribution-cleaner@v1
   with:
-    project-id: ${{ secrets.FIREBASE_PROJECT_ID }}
+    project-number: ${{ secrets.FIREBASE_PROJECT_NUMBER }}
     service-account-key-json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
     min-count: "3" # Keep only 3 releases
     max-days: "7" # Keep only last week's releases
@@ -136,7 +136,7 @@ jobs:
 ```yaml
 - uses: DosangGu/firebase-distribution-cleaner@v1
   with:
-    project-id: ${{ secrets.FIREBASE_PROJECT_ID }}
+    project-number: ${{ secrets.FIREBASE_PROJECT_NUMBER }}
     service-account-key-json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
     min-build-version: "2.0.0" # Delete anything below v2.0.0
     keep-latest-of-each-version: true # But keep latest of each version
@@ -147,7 +147,7 @@ jobs:
 ```yaml
 - uses: DosangGu/firebase-distribution-cleaner@v1
   with:
-    project-id: ${{ secrets.FIREBASE_PROJECT_ID }}
+    project-number: ${{ secrets.FIREBASE_PROJECT_NUMBER }}
     service-account-key-json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
     app-id: "1:123456789:android:abcd1234" # Specific app only
     min-count: "10"
@@ -168,7 +168,7 @@ jobs:
     steps:
       - uses: DosangGu/firebase-distribution-cleaner@v1
         with:
-          project-id: ${{ secrets.FIREBASE_PROJECT_ID_STAGING }}
+          project-number: ${{ secrets.FIREBASE_PROJECT_NUMBER_STAGING }}
           service-account-key-json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_STAGING }}
           min-count: "5"
           max-days: "14" # More aggressive for staging
@@ -179,7 +179,7 @@ jobs:
     steps:
       - uses: DosangGu/firebase-distribution-cleaner@v1
         with:
-          project-id: ${{ secrets.FIREBASE_PROJECT_ID_PROD }}
+          project-number: ${{ secrets.FIREBASE_PROJECT_NUMBER_PROD }}
           service-account-key-json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PROD }}
           min-count: "20"
           max-days: "90" # More conservative for production
@@ -192,7 +192,7 @@ To use the GitHub Action, you'll need to set up repository secrets:
 
 1. **Go to your repository settings** → Secrets and variables → Actions
 2. **Add the following secrets:**
-   - `FIREBASE_PROJECT_ID`: Your Firebase project ID
+   - `FIREBASE_PROJECT_NUMBER`: Your Firebase project number (recommended)
    - `FIREBASE_SERVICE_ACCOUNT_KEY`: Your Firebase service account key (JSON format)
 
 ### Service Account Permissions

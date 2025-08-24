@@ -15,7 +15,7 @@ export interface Release {
 }
 
 export interface CleanerOptions {
-  projectId: string;
+  projectNumber: string;
   serviceAccountKeyPath?: string;
   serviceAccountKeyJson?: string;
   appId?: string;

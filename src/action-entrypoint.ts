@@ -4,7 +4,24 @@ import { CleanerOptions } from "./types";
 
 async function run(): Promise<void> {
   try {
-    const projectId = core.getInput("project-id", { required: true });
+    // Backward compatibility: use project-id if project-number is not provided
+    const projectNumber =
+      core.getInput("project-number") || core.getInput("project-id");
+
+    if (!projectNumber) {
+      core.setFailed(
+        "Either 'project-number' or 'project-id' input must be provided."
+      );
+      return;
+    }
+
+    // Show deprecation warning if project-id is used
+    if (core.getInput("project-id") && !core.getInput("project-number")) {
+      core.warning(
+        "Input 'project-id' is deprecated. Please use 'project-number' instead."
+      );
+    }
+
     const serviceAccountKeyJson = core.getInput("service-account-key-json");
     const serviceAccountKeyPath = core.getInput("service-account-key-path");
     const appId = core.getInput("app-id");
@@ -25,7 +42,7 @@ async function run(): Promise<void> {
     }
 
     const cleanerOptions: CleanerOptions = {
-      projectId,
+      projectNumber,
       serviceAccountKeyJson: serviceAccountKeyJson || undefined,
       serviceAccountKeyPath: serviceAccountKeyPath || undefined,
       appId: appId || undefined,

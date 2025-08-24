@@ -8,7 +8,7 @@ export { CleanerOptions, App, Release } from "./types";
 
 export async function runCleaner(options: CleanerOptions): Promise<void> {
   const {
-    projectId,
+    projectNumber,
     serviceAccountKeyPath,
     serviceAccountKeyJson,
     appId: appIdOption,
@@ -38,10 +38,10 @@ export async function runCleaner(options: CleanerOptions): Promise<void> {
     // Process specific app or all apps
     if (appIdOption) {
       console.log(
-        `Processing specified app: ${appIdOption} for project: ${projectId}`
+        `Processing specified app: ${appIdOption} for project: ${projectNumber}`
       );
       await appProcessorService.processApp(
-        projectId,
+        projectNumber,
         appIdOption,
         minCount,
         maxDays,
@@ -49,7 +49,13 @@ export async function runCleaner(options: CleanerOptions): Promise<void> {
         keepLatestOfEachVersion
       );
     } else {
-      await appProcessorService.processAllApps(projectId, minCount, maxDays, minBuildVersion, keepLatestOfEachVersion);
+      await appProcessorService.processAllApps(
+        projectNumber,
+        minCount,
+        maxDays,
+        minBuildVersion,
+        keepLatestOfEachVersion
+      );
     }
 
     console.log("Cleaning complete.");

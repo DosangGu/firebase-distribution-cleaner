@@ -7,7 +7,11 @@ import { CleanerOptions } from "./types";
 async function main() {
   const program = new Command();
   program
-    .requiredOption("-p, --projectId <projectId>", "Firebase Project ID")
+    .option("-p, --projectNumber <projectNumber>", "Firebase Project Number")
+    .option(
+      "--projectId <projectId>",
+      "Firebase Project ID (deprecated, use --projectNumber)"
+    )
     .option(
       "-k, --serviceAccountKey <path>",
       "Path to Firebase service account key JSON file. Used if --serviceAccountKeyJson is not provided."
@@ -36,8 +40,24 @@ async function main() {
     .parse(process.argv);
 
   const options = program.opts();
+
+  // Backward compatibility: use projectId if projectNumber is not provided
+  let projectNumber = options.projectNumber;
+
+  if (!projectNumber && options.projectId) {
+    projectNumber = options.projectId;
+    console.warn(
+      "Warning: --projectId is deprecated. Please use --projectNumber instead."
+    );
+  }
+
+  if (!projectNumber) {
+    console.error("Error: --projectNumber is required");
+    process.exit(1);
+  }
+
   const cleanerOptions: CleanerOptions = {
-    projectId: options.projectId,
+    projectNumber: projectNumber,
     serviceAccountKeyPath: options.serviceAccountKey,
     serviceAccountKeyJson: options.serviceAccountKeyJson,
     appId: options.appId,

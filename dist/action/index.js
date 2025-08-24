@@ -201103,7 +201103,16 @@ const core = __importStar(__nccwpck_require__(37484));
 const cleaner_1 = __nccwpck_require__(29989);
 async function run() {
     try {
-        const projectId = core.getInput("project-id", { required: true });
+        // Backward compatibility: use project-id if project-number is not provided
+        const projectNumber = core.getInput("project-number") || core.getInput("project-id");
+        if (!projectNumber) {
+            core.setFailed("Either 'project-number' or 'project-id' input must be provided.");
+            return;
+        }
+        // Show deprecation warning if project-id is used
+        if (core.getInput("project-id") && !core.getInput("project-number")) {
+            core.warning("Input 'project-id' is deprecated. Please use 'project-number' instead.");
+        }
         const serviceAccountKeyJson = core.getInput("service-account-key-json");
         const serviceAccountKeyPath = core.getInput("service-account-key-path");
         const appId = core.getInput("app-id");
@@ -201118,7 +201127,7 @@ async function run() {
             return;
         }
         const cleanerOptions = {
-            projectId,
+            projectNumber,
             serviceAccountKeyJson: serviceAccountKeyJson || undefined,
             serviceAccountKeyPath: serviceAccountKeyPath || undefined,
             appId: appId || undefined,
@@ -201336,7 +201345,7 @@ const auth_service_1 = __nccwpck_require__(30507);
 const firebase_api_service_1 = __nccwpck_require__(70017);
 const app_processor_service_1 = __nccwpck_require__(48483);
 async function runCleaner(options) {
-    const { projectId, serviceAccountKeyPath, serviceAccountKeyJson, appId: appIdOption, minCount, maxDays, minBuildVersion, keepLatestOfEachVersion, } = options;
+    const { projectNumber, serviceAccountKeyPath, serviceAccountKeyJson, appId: appIdOption, minCount, maxDays, minBuildVersion, keepLatestOfEachVersion, } = options;
     try {
         // Initialize Firebase Admin SDK
         auth_service_1.AuthService.initializeFirebaseAdmin(serviceAccountKeyPath, serviceAccountKeyJson);
@@ -201347,11 +201356,11 @@ async function runCleaner(options) {
         const appProcessorService = new app_processor_service_1.AppProcessorService(firebaseApiService);
         // Process specific app or all apps
         if (appIdOption) {
-            console.log(`Processing specified app: ${appIdOption} for project: ${projectId}`);
-            await appProcessorService.processApp(projectId, appIdOption, minCount, maxDays, minBuildVersion, keepLatestOfEachVersion);
+            console.log(`Processing specified app: ${appIdOption} for project: ${projectNumber}`);
+            await appProcessorService.processApp(projectNumber, appIdOption, minCount, maxDays, minBuildVersion, keepLatestOfEachVersion);
         }
         else {
-            await appProcessorService.processAllApps(projectId, minCount, maxDays, minBuildVersion, keepLatestOfEachVersion);
+            await appProcessorService.processAllApps(projectNumber, minCount, maxDays, minBuildVersion, keepLatestOfEachVersion);
         }
         console.log("Cleaning complete.");
     }
